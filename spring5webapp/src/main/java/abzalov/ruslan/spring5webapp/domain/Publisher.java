@@ -90,4 +90,35 @@ public class Publisher {
     public void setBooks(Set<Book> books) {
         this.books = books;
     }
+
+    @Override
+    public String toString() {
+        return "Publisher{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", addressLine1='" + addressLine1 + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", zip='" + zip + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Publisher publisher = (Publisher) o;
+        return Objects.equals(id, publisher.id) &&
+                Objects.equals(name, publisher.name) &&
+                Objects.equals(addressLine1, publisher.addressLine1) &&
+                Objects.equals(city, publisher.city) &&
+                Objects.equals(state, publisher.state) &&
+                Objects.equals(zip, publisher.zip) &&
+                Objects.equals(books, publisher.books);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, addressLine1, city, state, zip, books);
+    }
 }
