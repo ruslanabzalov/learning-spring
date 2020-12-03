@@ -1,11 +1,18 @@
 package abzalov.ruslan.restsample.controllers;
 
+import abzalov.ruslan.restsample.components.EmployeeModelAssembler;
 import abzalov.ruslan.restsample.exceptions.EmployeeNotFoundException;
 import abzalov.ruslan.restsample.model.Employee;
 import abzalov.ruslan.restsample.repos.EmployeeRepository;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * RestController - аннотация, которая говорит о том, что данные, возвращаемые каждым методом,
@@ -19,13 +26,25 @@ public class EmployeeController {
      */
     private final EmployeeRepository employeeRepository;
 
-    public EmployeeController(EmployeeRepository employeeRepository) {
+    private final EmployeeModelAssembler modelAssembler;
+
+    public EmployeeController(EmployeeRepository employeeRepository, EmployeeModelAssembler employeeModelAssembler) {
         this.employeeRepository = employeeRepository;
+        this.modelAssembler = employeeModelAssembler;
     }
 
+    /**
+     * CollectionModel - это контейнер Spring HATEOAS, предназначенный для инкапсуляции коллекций.
+     * Позволяет включать в себя ссылки.
+     */
     @GetMapping("/employees")
-    public List<Employee> getAllEmployee() {
-        return employeeRepository.findAll();
+    public CollectionModel<EntityModel<Employee>> getAllEmployee() {
+        List<EntityModel<Employee>> employees = employeeRepository.findAll().stream()
+                .map(modelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(employees,
+                linkTo(methodOn(EmployeeController.class).getAllEmployee()).withSelfRel());
     }
 
     @PostMapping("/employees")
@@ -33,10 +52,15 @@ public class EmployeeController {
         return employeeRepository.save(employee);
     }
 
+    /**
+     * EntityModel<T> - это контейнер Spring HATEOAS, который включает в себя не только данные, но и ссылки.
+     */
     @GetMapping("/employees/{id}")
-    public Employee getEmployeeById(@PathVariable Long id) {
-        return employeeRepository.findById(id)
+    public EntityModel<Employee> getEmployeeById(@PathVariable Long id) {
+        Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
+
+        return modelAssembler.toModel(employee);
     }
 
     @PutMapping("/employees/{id}")
