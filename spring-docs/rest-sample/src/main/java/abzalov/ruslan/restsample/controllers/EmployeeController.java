@@ -6,6 +6,8 @@ import abzalov.ruslan.restsample.model.Employee;
 import abzalov.ruslan.restsample.repos.EmployeeRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,12 +50,16 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees")
-    public Employee saveNewEmployee(@RequestBody Employee employee) {
-        return employeeRepository.save(employee);
+    public ResponseEntity<?> saveNewEmployee(@RequestBody Employee employee) {
+        EntityModel<Employee> entityModel = modelAssembler.toModel(employeeRepository.save(employee));
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     /**
-     * EntityModel<T> - это контейнер Spring HATEOAS, который включает в себя не только данные, но и ссылки.
+     * EntityModel - это контейнер Spring HATEOAS, который включает в себя не только данные, но и ссылки.
      */
     @GetMapping("/employees/{id}")
     public EntityModel<Employee> getEmployeeById(@PathVariable Long id) {
