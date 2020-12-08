@@ -1,17 +1,14 @@
-package abzalov.ruslan.playground.sample3;
+package abzalov.ruslan.playground.sample8;
 
 import abzalov.ruslan.playground.sample2.MessageRenderer;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
-/**
- * Пример конфигурации в XML + аннотации.
- */
-public class SampleThreeApp {
+public class SampleEightApp {
     public static void main(String[] args) {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext();
-        context.load("classpath:sample3/app-context-annotation.xml");
+        context.load("classpath:sample8/app-context-config-p.xml");
         context.refresh();
-        MessageRenderer renderer = (MessageRenderer) context.getBean("renderer");
+        MessageRenderer renderer = context.getBean("renderer", MessageRenderer.class);
         renderer.render();
         context.close();
     }
