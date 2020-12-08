@@ -3,6 +3,9 @@ package abzalov.ruslan.playground.sample7;
 import abzalov.ruslan.playground.sample2.MessageRenderer;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
+/**
+ * Пример конфигурации XML со свойством property.
+ */
 public class SampleSevenApp {
     public static void main(String[] args) {
         GenericXmlApplicationContext context = new GenericXmlApplicationContext();
